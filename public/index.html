@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sigma Chat</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div id="username-prompt" class="username-prompt">
+            <h1>Welcome to chat</h1>
+            <input id="username-input" type="text" placeholder="Enter your username" />
+            <button id="join-button" class="btn">Join Chat</button>
+        </div>
+
+        <div id="chat-container" class="chat-container hidden">
+            <div id="messages" class="messages"></div>
+            <div class="message-input-container">
+                <input id="message-input" type="text" placeholder="Type a message..." />
+                <button id="send-button" class="btn">Send</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
+    <script src="/static/script.js"></script>
+</body>
+</html>
