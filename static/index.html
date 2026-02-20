@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bastion Chat</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="dot"></div>
+        <div>
+          <div class="title">Bastion Chat</div>
+          <div class="subtitle" id="status">Connecting…</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" id="changeNameBtn" title="Change username">Username</button>
+        <a class="btn ghost" href="/admin" title="Admin panel">Admin</a>
+      </div>
+    </header>
+
+    <main class="chat">
+      <div class="messages" id="messages"></div>
+    </main>
+
+    <footer class="composer">
+      <label class="upload btn ghost">
+        <input type="file" id="imageInput" accept="image/*" />
+        Upload
+      </label>
+
+      <input
+        class="text"
+        id="textInput"
+        placeholder="Write a message…"
+        maxlength="2000"
+        autocomplete="off"
+      />
+      <button class="btn" id="sendBtn">Send</button>
+    </footer>
+  </div>
+
+  <!-- Username modal -->
+  <div class="modal" id="nameModal">
+    <div class="modal-card">
+      <div class="modal-title">Choose a username</div>
+      <div class="modal-sub">This name is shown next to your messages.</div>
+      <input class="text" id="nameInput" placeholder="e.g., Gabriel" maxlength="24" />
+      <div class="modal-actions">
+        <button class="btn ghost" id="nameCancelBtn">Cancel</button>
+        <button class="btn" id="nameSaveBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

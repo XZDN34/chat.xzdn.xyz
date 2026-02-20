@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="dot"></div>
+        <div>
+          <div class="title">Admin</div>
+          <div class="subtitle">Clear chat + uploaded images</div>
+        </div>
+      </div>
+      <div class="actions">
+        <a class="btn ghost" href="/">Back to chat</a>
+      </div>
+    </header>
+
+    <main class="admin">
+      <div class="card">
+        <div class="card-title">Login</div>
+        <div class="row">
+          <input class="text" id="adminPw" type="password" placeholder="Admin password" />
+          <button class="btn" id="loginBtn">Login</button>
+        </div>
+        <div class="hint" id="loginHint"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Actions</div>
+        <p class="hint">
+          This will delete <b>all messages</b> and <b>all uploaded images</b>, 
+          but on the bright side will save me like 10 bajillion in extra storage costs
+        </p>
+        <button class="btn danger" id="clearBtn" disabled>Clear chat + images</button>
+        <div class="hint" id="actionHint"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/static/admin.js"></script>
+</body>
+</html>
