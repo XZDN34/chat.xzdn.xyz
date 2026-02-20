@@ -145,7 +145,11 @@ async function uploadImage(file){
 
 sendBtn.addEventListener("click", sendText);
 textInput.addEventListener("keydown", (e) => {
-  if(e.key === "Enter") sendText();
+  // Enter sends the message, Shift+Enter inserts a newline
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendText();
+  }
 });
 
 imageInput.addEventListener("change", async () => {
