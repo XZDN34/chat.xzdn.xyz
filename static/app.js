@@ -6,6 +6,32 @@ const textInput = el("textInput");
 const sendBtn = el("sendBtn");
 const imageInput = el("imageInput");
 
+
+const SITE_PASSWORD = 'nomichael';
+
+function denyAccess(){
+  document.documentElement.innerHTML = '<meta charset="utf-8"><title>Access denied</title><style>body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}h1{font-size:20px}</style><div><h1>Access denied</h1></div>';
+}
+
+function requirePassword(){
+  try{
+    if (sessionStorage.getItem('site_authed') === '1') return;
+  }catch(e){}
+  let attempts = 3;
+  while(attempts-- > 0){
+    const input = prompt('Enter site password:');
+    if (input === null) { denyAccess(); return; }
+    if (input === SITE_PASSWORD){
+      try{ sessionStorage.setItem('site_authed','1'); }catch(e){}
+      return;
+    }
+    alert('Wrong password');
+  }
+  denyAccess();
+}
+
+requirePassword();
+
 const nameModal = el("nameModal");
 const nameInput = el("nameInput");
 const nameSaveBtn = el("nameSaveBtn");

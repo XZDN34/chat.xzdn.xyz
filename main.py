@@ -134,7 +134,6 @@ async def get_history(limit: int = 100):
             (limit,)
         )
         rows = await cur.fetchall()
-    # Return oldest -> newest
     rows = list(reversed([dict(r) for r in rows]))
     return {"messages": rows}
 
@@ -146,7 +145,6 @@ async def upload_file(username: str, file: UploadFile = File(...)):
     if file.content_type not in ALLOWED_UPLOAD_TYPES:
         raise HTTPException(status_code=400, detail="Only common image/video types are allowed")
 
-    # Size limit: read in memory once (simple). For huge files, stream-chunking is better.
     raw = await file.read()
     max_bytes = MAX_UPLOAD_MB * 1024 * 1024
     if len(raw) > max_bytes:
@@ -162,7 +160,6 @@ async def upload_file(username: str, file: UploadFile = File(...)):
         "video/quicktime": ".mov"
     }.get(file.content_type, "")
 
-    # Determine kind: video or image
     kind = "video" if file.content_type.startswith("video/") else "image"
 
     fname = f"{uuid.uuid4().hex}{ext}"
