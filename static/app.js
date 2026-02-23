@@ -62,7 +62,17 @@ function addMessage(msg){
     img.loading = "lazy";
     body.appendChild(img);
   }else{
-    body.textContent = msg.content;
+    // Render markdown if available, otherwise fall back to plain text.
+    try {
+      if (window.marked && window.DOMPurify) {
+        const html = marked.parse(msg.content || "");
+        body.innerHTML = DOMPurify.sanitize(html);
+      } else {
+        body.textContent = msg.content;
+      }
+    } catch (err) {
+      body.textContent = msg.content;
+    }
   }
 
   wrap.appendChild(meta);
@@ -157,6 +167,38 @@ imageInput.addEventListener("change", async () => {
   imageInput.value = "";
   if(file) await uploadImage(file);
 });
+
+// --- Markdown preview wiring ---
+const previewEl = el("md-preview");
+const previewToggle = el("previewToggle");
+
+function renderPreview(){
+  if(!previewEl) return;
+  const enabled = previewToggle && previewToggle.dataset && previewToggle.dataset.enabled === "true";
+  if(enabled){
+    if (window.marked && window.DOMPurify) {
+      const html = marked.parse(textInput.value || "");
+      previewEl.innerHTML = DOMPurify.sanitize(html);
+    } else {
+      previewEl.textContent = textInput.value;
+    }
+    previewEl.classList.remove("hidden");
+    if(previewToggle) previewToggle.textContent = "Preview: On";
+  } else {
+    previewEl.classList.add("hidden");
+    if(previewToggle) previewToggle.textContent = "Preview: Off";
+  }
+}
+
+if(previewToggle){
+  previewToggle.dataset.enabled = "false";
+  previewToggle.addEventListener('click', () => {
+    previewToggle.dataset.enabled = previewToggle.dataset.enabled !== "true" ? "true" : "false";
+    renderPreview();
+  });
+}
+textInput.addEventListener('input', renderPreview);
+renderPreview();
 
 changeNameBtn.addEventListener("click", () => openNameModal(true));
 

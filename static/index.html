@@ -40,8 +40,11 @@
         rows="2"
         autocomplete="off"
       ></textarea>
+      <button class="btn ghost" id="previewToggle" type="button">Preview: Off</button>
       <button class="btn" id="sendBtn">Send</button>
     </footer>
+
+    <div id="md-preview" class="preview hidden" aria-live="polite"></div>
   </div>
 
   <!-- Username modal -->
@@ -57,6 +60,8 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
   <script src="/static/app.js"></script>
 </body>
 </html>

@@ -194,3 +194,17 @@ a{ color:inherit; text-decoration:none; }
 .card-title{ font-weight: 760; margin-bottom: 10px; }
 .row{ display:flex; gap: 10px; align-items:center; }
 .hint{ color: var(--muted); font-size: 13px; margin-top: 10px; }
+
+/* Markdown preview */
+#md-preview{
+  border: 1px solid var(--line);
+  padding: 12px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+  max-height: 300px;
+  overflow:auto;
+  margin-top: 10px;
+  color: var(--text);
+}
+.hidden{ display:none; }
+#previewToggle{ padding: 8px 10px; font-size: 0.9rem; }
