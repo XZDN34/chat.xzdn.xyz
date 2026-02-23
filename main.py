@@ -24,9 +24,9 @@ DB_PATH = DATA_DIR / "chat.db"
 DATA_DIR.mkdir(exist_ok=True)
 UPLOADS_DIR.mkdir(exist_ok=True)
 
-# ====== Config (set these as env vars in production) ======
+# 8======> Config
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "nigga123")
-TOKEN_SECRET = os.environ.get("TOKEN_SECRET", "change-me-too")
+TOKEN_SECRET = os.environ.get("TOKEN_SECRET", "remember to change")
 TOKEN_MAX_AGE_SECONDS = int(os.environ.get("TOKEN_MAX_AGE_SECONDS", "3600"))  # 1 hour
 MAX_UPLOAD_MB = int(os.environ.get("MAX_UPLOAD_MB", "8"))
 ALLOWED_IMAGE_TYPES = {"image/png", "image/jpeg", "image/webp", "image/gif"}
@@ -39,14 +39,13 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
 
-# ---------- Database ----------
 CREATE_TABLES_SQL = """
 CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     ts INTEGER NOT NULL,
     username TEXT NOT NULL,
-    kind TEXT NOT NULL,          -- "text" or "image"
-    content TEXT NOT NULL        -- text content or image URL path
+    kind TEXT NOT NULL,          
+    content TEXT NOT NULL        
 );
 """
 
@@ -60,7 +59,6 @@ async def on_startup():
     await init_db()
 
 
-# ---------- Helpers ----------
 def sanitize_username(name: str) -> str:
     name = name.strip()
     name = re.sub(r"\s+", " ", name)
@@ -87,7 +85,6 @@ async def require_admin(authorization: Optional[str] = Header(None)) -> None:
         raise HTTPException(status_code=401, detail="Invalid/expired admin token")
 
 
-# ---------- WebSocket manager ----------
 class ConnectionManager:
     def __init__(self):
         self.active: List[WebSocket] = []
@@ -115,7 +112,6 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-# ---------- Routes ----------
 @app.get("/")
 async def serve_index():
     return FileResponse(STATIC_DIR / "index.html")
