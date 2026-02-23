@@ -61,7 +61,14 @@ function addMessage(msg){
     img.src = msg.content;
     img.loading = "lazy";
     body.appendChild(img);
-  }else{
+  } else if(msg.kind === "video"){
+    const video = document.createElement("video");
+    video.src = msg.content;
+    video.controls = true;
+    video.style.maxWidth = "100%";
+    video.style.maxHeight = "400px";
+    body.appendChild(video);
+  } else {
     // Render markdown if available, otherwise fall back to plain text.
     try {
       if (window.marked && window.DOMPurify) {
@@ -128,12 +135,13 @@ function sendText(){
   textInput.focus();
 }
 
-async function uploadImage(file){
+async function uploadFile(file){
   if(!file) return;
   const fd = new FormData();
   fd.append("file", file);
 
-  statusEl.textContent = "Uploading image…";
+  const isVideo = file.type.startsWith("video/");
+  statusEl.textContent = isVideo ? "Uploading video…" : "Uploading image…";
 
   const res = await fetch(`/upload?username=${encodeURIComponent(username)}`, {
     method: "POST",
@@ -165,7 +173,22 @@ textInput.addEventListener("keydown", (e) => {
 imageInput.addEventListener("change", async () => {
   const file = imageInput.files?.[0];
   imageInput.value = "";
-  if(file) await uploadImage(file);
+  if(file) await uploadFile(file);
+});
+
+// Paste to upload: Ctrl+V or Cmd+V on document
+document.addEventListener("paste", async (e) => {
+  const items = e.clipboardData?.items || [];
+  for(const item of items){
+    if(item.kind === "file"){
+      const file = item.getAsFile();
+      if(file && (file.type.startsWith("image/") || file.type.startsWith("video/"))){
+        e.preventDefault();
+        await uploadFile(file);
+        break;
+      }
+    }
+  }
 });
 
 // --- Markdown preview wiring ---

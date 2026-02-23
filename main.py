@@ -28,8 +28,11 @@ UPLOADS_DIR.mkdir(exist_ok=True)
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "nigga123")
 TOKEN_SECRET = os.environ.get("TOKEN_SECRET", "remember to change")
 TOKEN_MAX_AGE_SECONDS = int(os.environ.get("TOKEN_MAX_AGE_SECONDS", "3600"))  # 1 hour
-MAX_UPLOAD_MB = int(os.environ.get("MAX_UPLOAD_MB", "8"))
-ALLOWED_IMAGE_TYPES = {"image/png", "image/jpeg", "image/webp", "image/gif"}
+MAX_UPLOAD_MB = int(os.environ.get("MAX_UPLOAD_MB", "30"))
+ALLOWED_UPLOAD_TYPES = {
+    "image/png", "image/jpeg", "image/webp", "image/gif", 
+    "video/mp4", "video/webm", "video/quicktime"
+}
 
 serializer = URLSafeTimedSerializer(TOKEN_SECRET)
 
@@ -137,11 +140,11 @@ async def get_history(limit: int = 100):
 
 
 @app.post("/upload")
-async def upload_image(username: str, file: UploadFile = File(...)):
+async def upload_file(username: str, file: UploadFile = File(...)):
     username = sanitize_username(username)
 
-    if file.content_type not in ALLOWED_IMAGE_TYPES:
-        raise HTTPException(status_code=400, detail="Only common image types are allowed")
+    if file.content_type not in ALLOWED_UPLOAD_TYPES:
+        raise HTTPException(status_code=400, detail="Only common image/video types are allowed")
 
     # Size limit: read in memory once (simple). For huge files, stream-chunking is better.
     raw = await file.read()
@@ -153,8 +156,14 @@ async def upload_image(username: str, file: UploadFile = File(...)):
         "image/png": ".png",
         "image/jpeg": ".jpg",
         "image/webp": ".webp",
-        "image/gif": ".gif"
+        "image/gif": ".gif",
+        "video/mp4": ".mp4",
+        "video/webm": ".webm",
+        "video/quicktime": ".mov"
     }.get(file.content_type, "")
+
+    # Determine kind: video or image
+    kind = "video" if file.content_type.startswith("video/") else "image"
 
     fname = f"{uuid.uuid4().hex}{ext}"
     out_path = UPLOADS_DIR / fname
@@ -164,7 +173,7 @@ async def upload_image(username: str, file: UploadFile = File(...)):
     msg = {
         "ts": int(time.time()),
         "username": username,
-        "kind": "image",
+        "kind": kind,
         "content": url_path
     }
 
