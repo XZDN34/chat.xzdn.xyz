@@ -40,6 +40,36 @@ const changeNameBtn = el("changeNameBtn");
 
 let username = localStorage.getItem("chat_username") || "";
 let ws = null;
+let notificationPermission = Notification?.permission || "default";
+
+// Request notification permission
+async function requestNotificationPermission(){
+  if(!("Notification" in window)) return;
+  if(notificationPermission === "granted") return;
+  if(notificationPermission === "denied") return;
+  
+  try{
+    const permission = await Notification.requestPermission();
+    notificationPermission = permission;
+  }catch(e){
+    console.log("Notification permission error:", e);
+  }
+}
+
+// Send a browser notification
+function sendNotification(title, options = {}){
+  if(!("Notification" in window)) return;
+  if(notificationPermission !== "granted") return;
+  
+  try{
+    new Notification(title, {
+      icon: "/static/favicon.ico",
+      ...options
+    });
+  }catch(e){
+    console.log("Notification error:", e);
+  }
+}
 
 function openNameModal(force=false){
   if (!force && username) return;
@@ -141,6 +171,23 @@ function connectWS(){
     const data = JSON.parse(ev.data);
     if(data.type === "message"){
       addMessage(data.message);
+      
+      // Send notification for messages from other users
+      if(data.message.username !== username){
+        let notificationText = "";
+        if(data.message.kind === "text"){
+          notificationText = data.message.content.slice(0, 100);
+        } else if(data.message.kind === "image"){
+          notificationText = "📷 Sent an image";
+        } else if(data.message.kind === "video"){
+          notificationText = "🎬 Sent a video";
+        }
+        
+        sendNotification(`New message from ${data.message.username}`, {
+          body: notificationText,
+          tag: "chat-message"
+        });
+      }
     }else if(data.type === "cleared"){
       messagesEl.innerHTML = "";
     }
@@ -255,6 +302,7 @@ nameSaveBtn.addEventListener("click", () => {
   setUsername(nameInput.value);
   closeNameModal();
   statusEl.textContent = `Online as ${username}`;
+  requestNotificationPermission();
 });
 nameCancelBtn.addEventListener("click", () => {
   if(!username) setUsername("Anonymous");
@@ -264,6 +312,8 @@ nameCancelBtn.addEventListener("click", () => {
 window.addEventListener("load", async () => {
   openNameModal(!username);
   if(!username) setUsername("Anonymous");
+  
+  requestNotificationPermission();
 
   await loadHistory();
   connectWS();
